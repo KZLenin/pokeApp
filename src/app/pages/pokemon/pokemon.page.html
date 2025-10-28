@@ -1,0 +1,141 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Pokédex</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Pokédex</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Tarjeta de búsqueda -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Buscar Pokémon</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-input 
+          [(ngModel)]="pokemonName" 
+          placeholder="Ej: pikachu, ditto, aegislash"
+          (keyup.enter)="searchPokemon()">
+        </ion-input>
+        <ion-button slot="end" (click)="searchPokemon()">
+          <ion-icon name="search"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Información del Pokémon -->
+  <ion-card *ngIf="pokemon">
+    <ion-card-header>
+      <ion-card-title class="ion-text-capitalize">{{ pokemon.name }}</ion-card-title>
+      <ion-card-subtitle>#{{ pokemon.id }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="pokemon-image">
+        <img [src]="pokemon.sprites.front_default" [alt]="pokemon.name">
+      </div>
+      
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <p><strong>Altura:</strong> {{ pokemon.height / 10 }}m</p>
+          </ion-col>
+          <ion-col>
+            <p><strong>Peso:</strong> {{ pokemon.weight / 10 }}kg</p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <p><strong>Tipos:</strong></p>
+      <ion-badge *ngFor="let type of pokemon.types" color="secondary" class="ion-margin-end">
+        {{ type.type.name }}
+      </ion-badge>
+
+      <p class="ion-margin-top"><strong>Habilidades:</strong></p>
+      <ion-chip *ngFor="let ability of pokemon.abilities" color="tertiary">
+        <ion-label>{{ ability.ability.name }}</ion-label>
+      </ion-chip>
+
+      <p class="ion-margin-top"><strong>Estadísticas:</strong></p>
+      <ion-list>
+        <ion-item *ngFor="let stat of pokemon.stats">
+          <ion-label>{{ stat.stat.name }}</ion-label>
+          <ion-badge slot="end">{{ stat.base_stat }}</ion-badge>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de Pokémon con paginación -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Lista de Pokémons ({{ offset + 1 }} - {{ offset + limit }})</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item 
+          *ngFor="let poke of pokemonList; let i = index" 
+          button 
+          (click)="pokemonName = poke.name; searchPokemon()">
+          <ion-label>
+            <h2 class="ion-text-capitalize">{{ poke.name }}</h2>
+            <p>#{{ offset + i + 1 }}</p>
+          </ion-label>
+          <ion-icon name="chevron-forward" slot="end"></ion-icon>
+        </ion-item>
+      </ion-list>
+      
+      <ion-grid class="ion-margin-top">
+        <ion-row>
+          <ion-col>
+            <ion-button 
+              expand="block" 
+              (click)="loadPrevious()"
+              [disabled]="!canGoPrevious()">
+              <ion-icon name="chevron-back" slot="start"></ion-icon>
+              Anterior
+            </ion-button>
+          </ion-col>
+          <ion-col>
+            <ion-button 
+              expand="block" 
+              (click)="loadNext()">
+              Siguiente
+              <ion-icon name="chevron-forward" slot="end"></ion-icon>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 🎨 Estilos dentro del HTML -->
+  <style>
+    .pokemon-image {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .pokemon-image img {
+      max-width: 200px;
+      height: auto;
+      filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+    }
+
+    ion-badge, ion-chip {
+      margin: 4px;
+      text-transform: capitalize;
+    }
+  </style>
+
+</ion-content>
